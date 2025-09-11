@@ -11,21 +11,41 @@ exports.createCustomer = async (req, res) => {
         if (!isValidCPF(cpf)) {
         return res.status(400).json({ message: 'Type a valid CPF' });
         }
-        const existingCustomer = await Customer.findOne({ $or: [{ cpf }, {email}]});
-        if (existingCustomer) {
-            if (existingCustomer.email === email) {
-                return res.status(409).json({ message: 'This email already exists in the system.' });
-            }
-            if (existingCustomer.cpf === cpf) {
-                return res.status(409).json({ message: 'This CPF already exists in the system.' });
-            }
+        const existingEmail = await Customer.findOne({ email });
+        if (existingEmail) {
+            return res.status(409).json({ message: 'This email already exists in the system.' });
+        }
+        const existingCPF = await Customer.findOne({ cpf });
+        if (existingCPF) {
+            return res.status(409).json({ message: 'This CPF already exists in the system.' });
         }
         const customerId = await generateCustomerId();
         const newCustomer = new Customer({ customerId, name, cpf, email });
         await newCustomer.save();
-        res.status(201).json(newCustomer);
+        res.status(201).json({message: 'Customer created successfully', customer: newCustomer});
     } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
 };
 
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    res.status(200).json({customers});
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+exports.getCustomerById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const customer = await Customer.findOne({ customerId: id });
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};

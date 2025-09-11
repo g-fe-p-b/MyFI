@@ -18,15 +18,24 @@ exports.createTransaction = async (req, res) => {
         if (!account) {
             return res.status(404).json({ message: 'Account not found.' });
         }
-        if (type === 'debit' && account.balance < amount) {
+        if (transactionType === 'debit' && account.balance < amount) {
             return res.status(400).json({ message: 'Insufficient funds for this debit transaction.' });
         }
-        const transactionId = await generateTransactionId();
+        const transactionId = generateTransactionId();
         const newTransaction = new Transaction({ transactionId, accountId, transactionType, amount });
         await newTransaction.save();
         account.balance += (transactionType === 'credit' ? amount : -amount);
         await account.save();
         res.status(201).json(newTransaction);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+exports.getAllTransactions = async (req, res) => {
+    try {
+        const transactions = await Transaction.find();
+        res.status(200).json(transactions);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
