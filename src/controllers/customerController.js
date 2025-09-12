@@ -19,7 +19,7 @@ exports.createCustomer = async (req, res) => {
         if (existingCPF) {
             return res.status(409).json({ message: 'This CPF already exists in the system.' });
         }
-        const customerId = await generateCustomerId();
+        const customerId = generateCustomerId();
         const newCustomer = new Customer({ customerId, name, cpf, email });
         await newCustomer.save();
         res.status(201).json({message: 'Customer created successfully', customer: newCustomer});
@@ -38,13 +38,26 @@ exports.getAllCustomers = async (req, res) => {
 };
 
 exports.getCustomerById = async (req, res) => {
-  const { id } = req.params;
+  const { customerId } = req.params;
   try {
-    const customer = await Customer.findOne({ customerId: id });
+    const customer = await Customer.findOne({ customerId: customerId });
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
     }
     res.status(200).json(customer);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+exports.deleteCustomer = async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const customer = await Customer.findOneAndDelete({ customerId: customerId });
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+    res.status(200).json({ message: 'Customer deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }

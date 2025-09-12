@@ -3,7 +3,7 @@ const { generateAccountId } = require('../utils/idGenerator');
 const Customer = require('../models/Customer');
 
 exports.createAccount = async (req, res) => {
-    const { customerId, initialDeposit } = req.body;
+    const { customerId, initialDeposit, accountType } = req.body;
     try {
         if (!customerId || typeof initialDeposit !== 'number' || isNaN(initialDeposit)) {
             return res.status(400).json({ message: 'Fill all fields with valid values' });
@@ -15,8 +15,11 @@ exports.createAccount = async (req, res) => {
         if (!customer) {
             return res.status(404).json({ message: 'Customer not found.' });
         }
+        if (!['checking', 'savings'].includes(accountType)) {
+            return res.status(400).json({ message: 'Invalid account type. Must be "checking" or "savings".' });
+        }
         const accountId = generateAccountId();
-        const newAccount = new Account({ accountId, customerId, balance: initialDeposit });
+        const newAccount = new Account({ accountId, customerId: customerId, balance: initialDeposit, accountType: accountType });
         await newAccount.save();
         res.status(201).json({message: 'Account created successfully', account: newAccount, body: req.body});
     } catch (error) {
