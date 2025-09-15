@@ -5,7 +5,7 @@ const customerRoutes = require('./src/routes/customerRoutes');
 const accountRoutes = require('./src/routes/accountRoutes');
 const transactionRoutes = require('./src/routes/transactionRoutes');
 const app = express();
-dotenv.config();
+dotenv.config({path: './.env'});
 app.use(express.json());
 connectDB();
 
@@ -15,7 +15,7 @@ app.use('/accounts', accountRoutes);
 app.get('/', (req, res) => {
     res.send('Welcome to MyFI API');
 });
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
