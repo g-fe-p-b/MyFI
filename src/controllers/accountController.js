@@ -24,9 +24,8 @@ exports.createAccount = async (req, res) => {
             accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
             existingAccount = await Account.findOne({ accountNumber });   
         }
-        const accountId = generateAccountId();
+        const accountId = await generateAccountId();
         const newAccount = new Account({ accountId, customerId: customerId, accountType: accountType, branch: branch, accountNumber: accountNumber ,balance: initialDeposit });
-
         await newAccount.save();
         customer.accounts.push(newAccount.accountId);
         await customer.save();
@@ -35,7 +34,6 @@ exports.createAccount = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
-
 exports.getBalance = async (req, res) => {
     const { accountId } = req.params;
     try {
@@ -43,13 +41,12 @@ exports.getBalance = async (req, res) => {
         if (!account) {
             return res.status(404).json({ message: 'Account not found' });
         }
-        res.status(200).json({ balance: account.balance});
+        const formattedBalance = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(account.balance);
+        res.status(200).json({ balance: formattedBalance });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 };
-
-
 exports.getAccountById = async (req, res) => {
     const { accountId } = req.params;
     try {
@@ -62,7 +59,6 @@ exports.getAccountById = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
-
 exports.deleteAccount = async (req, res) => {
     const { accountId } = req.params;
     try {

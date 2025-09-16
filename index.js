@@ -1,21 +1,19 @@
-const express = require('express');
 const dotenv = require('dotenv');
-const connectDB = require('./src/config/database');
-const customerRoutes = require('./src/routes/customerRoutes');
-const accountRoutes = require('./src/routes/accountRoutes');
-const transactionRoutes = require('./src/routes/transactionRoutes');
-const app = express();
-dotenv.config({path: './.env'});
-app.use(express.json());
-connectDB();
+const mongoose = require('mongoose');
+const { initCounters } = require('./src/utils/idGenerator');
+const app = require('./server');
 
-app.use('/customers', customerRoutes);
-app.use('/transactions', transactionRoutes);
-app.use('/accounts', accountRoutes);
-app.get('/', (req, res) => {
-    res.send('Welcome to MyFI API');
-});
+dotenv.config({path: './.env'});
+
 const PORT = process.env.PORT;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+const MONGO_URI = process.env.MONGO_URI;
+
+mongoose.connect(MONGO_URI).then(async () => {
+    console.log('Connected to MongoDB');
+    await initCounters();
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.error('Failed to connect to MongoDB', err);
 });
