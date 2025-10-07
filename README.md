@@ -124,10 +124,22 @@ All API responses are in JSON format. Dates must follow the ISO 8601 (YYYY-MM-DD
 
 👤 Customers / Clientes
 ```
-| Method | Endpoint   | Description                                   |
-| ------ | ---------- | --------------------------------------------- |
-| POST   | /customers | Creates a new customer / Cria um novo cliente |
 
+┌--------┯------------------------┯------------------------------------------------┯----------------------------------------------------------------------------------------------------------------------┓
+| Method | Endpoint               | Description                                    | Server status                                                                                                        |
+╞========╪========================╪================================================╪======================================================================================================================╡
+| POST   | /customers             | Creates a new customer /                       | (201), "Costumer created successfuly" || (400), "fill all the fields with valid values", "Type a valid CPF" ||       |
+|        |                        | Cria um novo cliente                           | (409), "This email already exists in the system.", "This CPF already exists in the system." || (500), "Server error" |
+┣--------╋------------------------╋------------------------------------------------╋----------------------------------------------------------------------------------------------------------------------┫
+| GET    | /customers             | Gets a list with all customers /               | (200), Returns a list of all costumers || (500), "Server error"                                                      |
+|        |                        | Retorna uma lista com todos os clientes        |                                                                                                                      |
+┣--------╋------------------------╋------------------------------------------------╋----------------------------------------------------------------------------------------------------------------------┫
+| GET    | /customers/:customerId | Gets all the information of a customer /       | (200), Returns all information of a costumer || (404), "Costumer not found" || (500), "Server error"                 |
+|        |                        | Retorna todas as informações de um cliente     |                                                                                                                      |
+┣--------╋------------------------╋------------------------------------------------╋----------------------------------------------------------------------------------------------------------------------┫
+| DELETE | /customers             | Delete a costumer /                            | (200), "Costumer deleted successfuly" || (404), "Costumer not found" || (500), "Server error"                        |
+|        |                        | Deleta um cliente                              |                                                                                                                      |
+┕--------┷------------------------┷------------------------------------------------┷----------------------------------------------------------------------------------------------------------------------┙
 
 ```
 
@@ -144,10 +156,23 @@ json
 
 🏦 Accounts / Contas
 ````
-| Method | Endpoint                      | Description                                                                |
-| ------ | ----------------------------- | -------------------------------------------------------------------------- |
-| POST   | /accounts/new                 | Creates a new account for a customer / Cria uma nova conta para um cliente |
-| GET    | /accounts/\:accountId/balance | Gets the balance of an account / Consulta o saldo de uma conta específica  |
+┌--------┯-------------------------------┯------------------------------------------------------┯-----------------------------------------------------------------------------------------------------------------------------------┓
+| Method | Endpoint                      | Description                                          | Server status                                                                                                                     |
+╞========╪===============================╪======================================================╪===================================================================================================================================╡
+| POST   | /accounts/new                 | Creates a new account for a customer /               | (201), "Account created successfuly" || (400), "fill all the fields with valid values", "initial deposit must be non-negative",   |
+|        |                               | Cria uma nova conta para um cliente                  |  "Invalid account type. Must be 'checking' or 'savings'." || (404), "Customer not found." || (500), "Server error"                |
+┣--------╋-------------------------------╋------------------------------------------------------╋-----------------------------------------------------------------------------------------------------------------------------------┫
+| GET    | /accounts/:accountId/balance  | Gets the balance of an account /                     | (200), return the balance of the account || (404), "Account not found." || (500), "Server error"                                  |
+|        |                               | Consulta o saldo de uma conta específica             |                                                                                                                                   |
+┣--------╋-------------------------------╋------------------------------------------------------╋-----------------------------------------------------------------------------------------------------------------------------------┫
+| GET    | /accounts/:accountId/         | Gets the informations of one account /               | (200), return the informations of the account / (404), "Account not found." || (500), "Server error"                              |
+|        |                               | Consulta as informações de um conta específica       |                                                                                                                                   |
+┣--------╋-------------------------------╋------------------------------------------------------╋-----------------------------------------------------------------------------------------------------------------------------------┫
+| DELETE | /accounts/:accountId/         | Delete an specific account by its ID /               | (200), "Account deleted successfuly" || (404), "Account not found." || (500), "Server error"                                      |
+|        |                               | Deleta uma conta específica pelo seu ID              |                                                                                                                                   |
+┕--------┷-------------------------------┷------------------------------------------------------┷-----------------------------------------------------------------------------------------------------------------------------------┙
+
+
 
 ````
 
@@ -165,11 +190,19 @@ JSON
 
 💳 Transactions / Transações
 ````
-| Method | Endpoint                  | Description                                                                               |
-| ------ | ------------------------- | ----------------------------------------------------------------------------------------- |
-| POST   | /transactions/new         | Performs a transaction (credit or debit) / Realiza uma nova transação (crédito ou débito) |
-| POST   | /transactions/transfer    | Transfers funds between accounts / Transfere fundos entre duas contas                     |
-| GET    | /transactions/\:accountId | Lists all transactions (statement) / Lista todas as transações de uma conta (extrato)     |
+┌--------┯---------------------------┯-----------------------------------------------------┯-----------------------------------------------------------------------------------------------------------------------------------------------------------┓
+| Method | Endpoint                  | Description                                         | Server status                                                                                                                                             |
+╞========╪===========================╪=====================================================╪===========================================================================================================================================================╡
+| POST   | /transactions/new         | Performs a transaction (credit or debit) /          | (201), "Transaction created successfuly" || (400), "Fill all fields with valid values", "Transaction type must be either credit or debit.",               |
+|        |                           |  Realiza uma nova transação (crédito ou débito)     | "Amount must be greater than zero.", "Insufficient funds for this debit transaction." || (404), "Account not found." || (500), "Server error"             |
+┣--------╋---------------------------╋-----------------------------------------------------╋-----------------------------------------------------------------------------------------------------------------------------------------------------------┫
+| POST   | /transactions/transfer    | Transfers funds between accounts /                  | (201), "Transfer successful" || (400), "Fill all fields with valid values", "Cannot transfer to the same account.", "Amount must be greater than zero.",  |
+|        |                           | Transfere fundos entre duas contas                  | "Insufficient funds in source account." || (404), "Source account not found.", "Destination account not found." || (500), "Server error"                  |
+┣--------╋---------------------------╋-----------------------------------------------------╋-----------------------------------------------------------------------------------------------------------------------------------------------------------┫
+| GET    | /transactions/:accountId  | Lists all transactions (statement) /                | (200), Returns a list of all transactions of an account || (500), "Server error"                                                                          |
+|        |                           | Lista todas as transações de uma conta (extrato)    |                                                                                                                                                           |
+┕--------┷---------------------------┷-----------------------------------------------------┷-----------------------------------------------------------------------------------------------------------------------------------------------------------┙
+
 
 ````
 ````POST /transactions/new```` Body Example:
@@ -207,3 +240,4 @@ This project is licensed under the ISC License.
 
 ## 👨‍💻 Author / Autor
 Made by GUIf.
+
