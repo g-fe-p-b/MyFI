@@ -35,7 +35,6 @@ exports.createAccount = async (req, res) => {
     }
 };
 exports.getBalance = async (req, res) => {
-    const { accountId } = req.params;
     try {
         const account = await Account.findOne({ accountId });
         if (!account) {
