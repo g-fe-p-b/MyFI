@@ -1,25 +1,23 @@
-const dotenv = require('dotenv');
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import { UnauthorizedError } from '../utils/errs.js'; 
+import dotenv from 'dotenv';
+dotenv.config();
 
-dotenv.config({path: '../../.env'});
-const JWT_SECRET = process.env.JWT_SECRET;
+export const authenticateToken = (req, res, next) => { 
+    const authHeader = req.header('Authorization');
+    const token = authHeader && authHeader.split(' ')[1];
 
-exports.auth = async (req, res, next) => {
-    const authToken = req.headers['authorization'];
-    try{
-        const bearer = await authToken.split(' ');
-        const token = bearer[1];
-
-        jwt.verify(token,JWT_SECRET, (err, data) => {
-            if(err){
-            return res.status(401).json({ message: 'Invalid Token' });
-            } else {
-                req.token = token;
-                req.user = decodedPayload;
-            }
-            next();
-        })
-    } catch(error) {
-        res.status(401).json({ message: 'Invalid Token', error });
+    if (token == null) {
+        return res.status(401).json({message: 'Access denied.'});
     }
-}
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return next(new UnauthorizedError('Invalid or expired token.'));
+        }
+        req.user = user;
+        next();
+    });
+};
+
+export default authenticateToken;

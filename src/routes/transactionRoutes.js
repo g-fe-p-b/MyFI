@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const transactionController = require('../controllers/transactionController');
+import { Router } from 'express';
+const router = Router();
+import { create, getTransactionsByAccount, transferFunds } from '../controllers/transactionController.js';
 
-router.post('/new', transactionController.createTransaction);
-router.get('/:accountId', transactionController.getTransactionsByAccount);
-router.post('/transfer', transactionController.transferFunds);
-module.exports = router;
+router.post('/', create);
+router.get('/:accountId', getTransactionsByAccount);
+router.post('/transfer', transferFunds);
+export default router;

@@ -1,21 +1,31 @@
-const Account = require('../models/Account');
-const Customer = require('../models/Customer');
-const {generateAccountId} = require('../utils/idGenerator');
+import Account from '../models/Account.js';
+import Customer from '../models/Customer.js';
+import idGenerator from '../utils/idGenerator.js';
 
-class accountService {
+const {generateAccountId} = idGenerator;
+
+class AccountService {
     async createAccount({ customerId, initialDeposit, accountType, branch}){
         if(!customerId || typeof initialDeposit != 'number' || isNaN(initialDeposit)){
-            throw {status: 400, message: 'Fill all the fields with valid values'};
+            const error = new Error ('Fill all the fields with valid values');
+            error.statusCode = 400;
+            throw error;
         }
         if(initialDeposit < 0){
-            throw {status: 400, message: 'Initial deposit must be non-negative'};
+            const error = new Error ('Initial deposit must be non-negative');
+            error.statusCode = 400;
+            throw error;
         }
         const customer = await Customer.findOne({ customerId});
         if(!customer){
-            throw{ status: 404, message: 'Customer not found.'};
+            const error = new Error ('Customer not found.');
+            error.statusCode = 400;
+            throw error;
         }
         if(!['checking', 'savings'].includes(accountType)){
-            throw {status:400, message: 'Invalid account type. Must be "checking" or "savings"'};
+            const error = new Error ('Invalid account type. Must be "checking" or "savings"');
+            error.statusCode = 400;
+            throw error;
         }
         const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
         const existingAccount = await Account.findOne({ accountNumber });
@@ -26,7 +36,6 @@ class accountService {
         const accountId = await generateAccountId();
         const newAccount = new Account({ accountId, customerId, accountType, branch, accountNumber, balance: initialDeposit});
         await newAccount.save();
-        customer.accounts.push(newAccount.accountId);
         await customer.save();
         return newAccount;
     }
@@ -34,7 +43,9 @@ class accountService {
     async getBalance({ accountId }){
         const account = await Account.findOne({ accountId });
         if(!account){
-            throw {status: 404, message: 'Account not found.'};
+            const error = new Error ('Account not found.');
+            error.statusCode = 404;
+            throw error;
         }
         return new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRl'}).format(account.balance);
     }
@@ -52,7 +63,7 @@ class accountService {
         if(!account){
             throw {status: 404, message: 'Account not found.'};
         }
-        await Customer.updateOne(
+        await Account.updateOne(
             { customerId: account.customerId},
             { $pull: { accounts: account._id } }
         );
@@ -60,4 +71,4 @@ class accountService {
     };
 };
 
-module.exports = new accountService();
+export default new AccountService();

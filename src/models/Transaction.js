@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const transactionSchema = new mongoose.Schema({
   transactionId: { type: String},
@@ -9,4 +9,4 @@ const transactionSchema = new mongoose.Schema({
   category: { type: String, required: true },
   accountId: { type: String, ref: 'Account', required: true }
 });
-module.exports = mongoose.model('Transaction', transactionSchema);
+export default mongoose.model('Transaction', transactionSchema);

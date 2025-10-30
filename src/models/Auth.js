@@ -1,7 +1,17 @@
-const { TokenExpiredError } = require('jsonwebtoken');
-const mongoose = require('mongoose');
+import { TokenExpiredError } from 'jsonwebtoken';
+import { Schema, model } from 'mongoose';
 
-const userAuthSchema = new mongoose.Schema({
+const userAuthSchema = new Schema({
+  name: { type: String, required: true },
+  role: { type: String, enum: ['admin', 'user'], required: true},
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true},
+  cpf: { type: String, required: true, unique: true },
+  authorization: {type: String},
+  token: {},
+});
+
+const adminAuthSchema = new Schema({
   name: { type: String, required: true },
   role: { type: String, enum: ['admin', 'user'], required: true},
   email: { type: String, required: true, unique: true },
@@ -10,14 +20,5 @@ const userAuthSchema = new mongoose.Schema({
   token: {},
 });
 
-const adminAuthSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  role: { type: String, enum: ['admin', 'user'], required: true},
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true},
-  cpf: { type: String, required: true, unique: true },
-  token: {},
-});
-
-module.exports = mongoose.model('UserAuth', userAuthSchema);
-module.exports = mongoose.model('AdminAuth', adminAuthSchema);
+export default model('UserAuth', userAuthSchema);
+//export default model('AdminAuth', adminAuthSchema);

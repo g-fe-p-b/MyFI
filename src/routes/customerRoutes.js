@@ -1,9 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const customerController = require('../controllers/customerController');
+import { Router } from 'express';
+import { authenticateToken } from "../middlewares/authMiddleware.js";
+const router = Router();
+import { create, login, getAllCustomers, getCustomer, deleteCustomer } from '../controllers/customerController.js';
 
-router.post('/', customerController.createCustomer);
-router.get('/', customerController.getAllCustomers);
-router.get('/:customerId', customerController.getCustomerById);
-router.delete('/:customerId', customerController.deleteCustomer);
-module.exports = router;
+router.post('/', create);
+router.post('/login', login);
+router.get('/', authenticateToken, getAllCustomers);
+router.get('/:customerId', authenticateToken, getCustomer);
+router.delete('/:customerId', authenticateToken, deleteCustomer);
+export default router;

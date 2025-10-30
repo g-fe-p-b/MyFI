@@ -1,14 +1,14 @@
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const { initCounters } = require('./src/utils/idGenerator');
-const app = require('./server');
+import { config } from 'dotenv';
+import { connect } from 'mongoose';
+import { initCounters } from './src/utils/idGenerator.js';
+import app from './server.js';
 
-dotenv.config({path: './.env'});
+config({path: './.env'});
 
 const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI;
 
-mongoose.connect(MONGO_URI).then(async () => {
+connect(MONGO_URI).then(async () => {
     console.log('Connected to MongoDB');
     await initCounters();
     app.listen(PORT, () => {

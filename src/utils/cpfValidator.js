@@ -16,4 +16,4 @@ function validateCPF(cpf) {
     if (rev === 10 || rev === 11) rev = 0;
     return rev === parseInt(cpf.charAt(10));
 }
-module.exports = { isValidCPF: validateCPF };
+export const isValidCPF = validateCPF;

@@ -1,23 +1,23 @@
-const Customer = require('../models/Customer');
-const Account = require('../models/Account');
-const Transaction = require('../models/Transaction');
+import Customer from '../models/Customer.js';
+import Account from '../models/Account.js';
+import Transaction from '../models/Transaction.js';
 let counters = {customer: 0, account: 0, transaction: 0};
 
 const prefixMap = {
-    customer: 'cus',
-    account: 'acc',
-    transaction: 'txn'
+    customer: 'cus_',
+    account: 'acc_',
+    transaction: 'txn_'
 };
 const modelMap = {
     customer: Customer,
     account: Account,
     transaction: Transaction
 };
-async function initCounters() {
+export async function initCounters() {
     for (const type of Object.keys(modelMap)) {
         const Model = modelMap[type];
         const prefix = prefixMap[type];
-        const doc = await Model.findOne({ [type + 'Id']: { $regex: `^${prefix}\\d{6}$` } })
+        const doc = await Model.findOne({ [type + 'Id']: { $regex: `^${prefix}\\d{3}$` } })
             .sort({ [type + 'Id']: -1 })
             .lean();
         if (doc) {
@@ -38,9 +38,9 @@ async function generateId(type) {
     let existingId = true;
     while (existingId) {
         counters[type]++;
-        newId = `${prefix}${String(counters[type]).padStart(6, '0')}`;
+        newId = `${prefix}${String(counters[type]).padStart(3, '0')}`;
         existingId = await Model.exists({ [type + 'Id']: newId });
     }
     return newId;
 }
-module.exports = { initCounters, generateCustomerId: () => generateId('customer'), generateAccountId: () => generateId('account'), generateTransactionId: () => generateId('transaction') };
+export default { initCounters: () => initCounters(), generateCustomerId: () => generateId('customer'), generateAccountId: () => generateId('account'), generateTransactionId: () => generateId('transaction') };
