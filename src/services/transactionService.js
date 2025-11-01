@@ -72,6 +72,74 @@ class TransactionService {
         return transactions;
     }
 
+    async transferFunds ({fromAccountId, toAccountId, amount, description, category}){
+        const fromAccount = await Account.findOne({ accountId: fromAccountId });
+        const toAccount = await Account.findOne({ accountId: toAccountId });
+        if (!fromAccountId || !toAccountId || !amount || !description || !category) {
+            const error = new Error ('Fill all the fields');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (fromAccountId === toAccountId) {
+            const error = new Error ('Cannot transfer to the same account.');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (amount <= 0) {
+            const error = new Error ('Amount must be greater than zero.');
+            error.statusCode = 400;
+            throw error;
+        }
+        if (!fromAccount) {
+            const error = new Error ('Source account not found.');
+            error.statusCode = 404;
+            throw error;
+        }
+        if (!toAccount) {
+            const error = new Error ('Destination account not found.');
+            error.statusCode = 404;
+            throw error;
+        }
+        if (fromAccount.balance < amount) {
+            const error = new Error ('Insufficient funds in source account.');
+            error.statusCode = 400;
+            throw error;
+        }
+        const date = new Date();
+        const formatter = new Intl.DateTimeFormat("pt-BR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZone: process.env.TIMEZONE
+        });
+        const parts = formatter.formatToParts(date);
+        const formatted =
+                        `${parts.find(p => p.type === "year").value}/` +
+                        `${parts.find(p => p.type === "month").value}/` +
+                        `${parts.find(p => p.type === "day").value} ` +
+                        `${parts.find(p => p.type === "hour").value}:` +
+                        `${parts.find(p => p.type === "minute").value}:` +
+                        `${parts.find(p => p.type === "second").value}`;
+        const fromTransactionId = await generateTransactionId();
+        const toTransactionId = await generateTransactionId();
+        const fromTransaction = new Transaction({date: formatted, description: description || `Transfer to ${toAccountId}`, transactionId: fromTransactionId, accountId: fromAccountId, transactionType: 'debit', amount, category: category || 'transfer' });
+        const toTransaction = new Transaction({date: formatted, description: description || `Transfer from ${fromAccountId}`, transactionId: toTransactionId, accountId: toAccountId, transactionType: 'credit', amount, category: category || 'transfer' });
+        await fromTransaction.save();
+        await toTransaction.save();
+        fromAccount.balance -= amount;
+        toAccount.balance += amount;
+        await fromAccount.save();
+        await toAccount.save();
+        fromAccount.transactions.push(fromTransaction.transactionId);
+        toAccount.transactions.push(toTransaction.transactionId);
+        await fromAccount.save();
+        await toAccount.save();
+    }
+
 };
 
 export default new TransactionService();
