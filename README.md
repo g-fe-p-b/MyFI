@@ -20,6 +20,7 @@
 * [Project Structure / Estrutura do Projeto](#-project-structure--estrutura-do-projeto)
 * [Getting Started / Como Começar](#-getting-started--como-começar)
 * [API Endpoints / Como Utilizar a API](#-api-endpoints--como-utilizar-a-api)
+* [Open Finance / Open Finance](#-open-finance--open-finance)
 * [Next Steps / Próximos Passos](#-next-steps--próximos-passos)
 * [License / Licença](#-license--licença)
 * [Author / Autor](#-author--autor)
@@ -34,6 +35,7 @@
 * **Transaction Processing** (Credit & Debit) / *Realização de transações (crédito e débito)* 
 * **Fund Transfers** / *Transferência de fundos entre contas* 
 * **Transaction History** (Statement) / *Listagem de transações por conta (extrato)* 
+* **Open Finance Consent Management** / *Gerenciamento de consentimentos Open Finance*
 
 ---
 
@@ -44,6 +46,7 @@
 * **MongoDB**: NoSQL Database
 * **Mongoose**: ODM for MongoDB interaction
 * **Dotenv**: Environment variables manager
+* **JWT**: Authentication for API endpoints
 
 ---
 
@@ -57,16 +60,19 @@ MyFI/
 |   ├── controllers/
 │   │   ├── accountController.js
 │   │   ├── customerController.js
+│   │   ├── consentController.js
 │   │   └── transactionController.js
 |   |  
 |   ├── models/
 │   │   ├── Account.js
 │   │   ├── Customer.js
+│   │   ├── Consent.js
 │   │   └── Transaction.js
 |   |  
 │   ├── routes/
 │   │   ├── accountRoutes.js
 │   │   ├── customerRoutes.js
+│   │   ├── consentRoutes.js
 │   │   └── transactionRoutes.js
 |   |  
 │   └── utils/
@@ -229,11 +235,11 @@ JSON
 ````
 
 ## 📈 Next Steps / Próximos Passos
-- [ ] JWT Authentication: Implement authentication and authorization
-- [ ] CRUD Operations: Add endpoints for updating and deleting data (PUT/DELETE)
-- [ ] Error Logging: Implement a robust logging system for error monitoring
-- [ ] Testing: Create a comprehensive suite of unit and integration tests
-- [ ] API Documentation: Document the API with Swagger/OpenAPI
+- [x] JWT Authentication: Implemented for customer endpoints
+- [x] Open Finance Integration: Added consent management and data sharing
+- [ ] CRUD Operations: Add endpoints for updating data (PUT)
+- [ ] Error Logging: Implement a robust logging system
+- [ ] API Documentation: Document with Swagger/OpenAPI
 
 ## 📜 License / Licença
 This project is licensed under the ISC License.
