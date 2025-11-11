@@ -6,8 +6,23 @@ import crypto from 'crypto';
 
 class ConsentService {
   async createConsent({ customerId, requester, scopes, expiresAt }){
-    if (!customerId || !requester || !requester.name || !Array.isArray(scopes) || scopes.length === 0) {
-      const error = new Error('Missing required fields to create consent');
+    if (!customerId ) {
+      const error = new Error('Customer ID Problem.');
+      error.statusCode = 400;
+      throw error;
+    }
+    if ( !requester) {
+      const error = new Error('Requester Problem.');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (!requester.name) {
+      const error = new Error('Requester Name Problem.');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (!Array.isArray(scopes) || scopes.length === 0) {
+      const error = new Error('Scope Problem.');
       error.statusCode = 400;
       throw error;
     }

@@ -19,13 +19,13 @@ const consentSchema = new mongoose.Schema({
         required: true,
     },
     requester: {
-        name: { type: String, required: true },
+        name: { type: String, required: false },
         institutionId: { type: String, required: false },
         contact: { type: String, required: false },
     },
     scopes: [{
         type: String,
-        required: true,
+        required: false,
     }],
     status: {
         type: String,
