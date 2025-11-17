@@ -1,5 +1,5 @@
 import CustomerService from '../services/customerService.js';
-
+import Customer from '../models/Customer.js';
 
 export async function create(req, res) {
   try {

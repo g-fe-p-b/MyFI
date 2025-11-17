@@ -2,19 +2,18 @@ import express from 'express';
 const router = express.Router();
 
 import openFinanceController from '../controllers/openFinanceController.js';
-import { login } from '../controllers/customerController.js';
-import authenticateToken from '../middlewares/authMiddleware.js';
+import apiKeyAuth from '../middlewares/apiKeyAuth.js';
 
-router.use(authenticateToken);
+/**
+ * Open Finance Routes - Third-party data access
+ * All data endpoints require API key from approved consent (x-api-key header)
+ * Consent management endpoints are in /consents route
+ */
 
-router.get('/:connectionId/customers/:customerId', openFinanceController.getCustomerData.bind(openFinanceController));
-router.get('/:connectionId/customers/:customerId/accounts', openFinanceController.getCustomerAccounts.bind(openFinanceController));
-router.get('/:connectionId/accounts/:accountId/balance', openFinanceController.getAccountBalance.bind(openFinanceController));
-router.get('/:connectionId/accounts/:accountId/transactions', openFinanceController.getAccountTransactions.bind(openFinanceController));
-
-router.post('/consents', openFinanceController.createConsent.bind(openFinanceController));
-router.get('/:connectionId/consents/:id', openFinanceController.getConsent.bind(openFinanceController));
-router.delete('/consents/:id', openFinanceController.revokeConsent.bind(openFinanceController));
-router.post('/login', login)
+// Customer data endpoints - protected with API key authentication
+router.get('/customers/:customerId', apiKeyAuth, openFinanceController.getCustomer.bind(openFinanceController));
+router.get('/customers/:customerId/accounts', apiKeyAuth, openFinanceController.getCustomerAccounts.bind(openFinanceController));
+router.get('/accounts/:accountId/balance', apiKeyAuth, openFinanceController.getAccountBalance.bind(openFinanceController));
+router.get('/accounts/:accountId/transactions', apiKeyAuth, openFinanceController.getAccountTransactions.bind(openFinanceController));
 
 export default router;

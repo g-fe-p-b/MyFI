@@ -1,5 +1,7 @@
 import AccountService from '../services/accountService.js';
 
+const accountService = AccountService;
+
 export async function createAccount(req, res) {
     try {
         const newAccount = await AccountService.createAccount(req.body);
@@ -34,7 +36,7 @@ export async function getAccountById(req, res) {
 }
 export async function deleteAccount(req, res) {
     try {
-        accountService.deleteAccount(req.params.accountId);
+            await AccountService.deleteAccount(req.params.accountId);
         res.status(204).json({ message: 'Account deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });

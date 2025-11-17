@@ -1,7 +1,6 @@
-import accountService from '../services/accountService.js';
-import AccountService from '../services/accountService.js';
-import transactionService from '../services/transactionService.js';
+import TransactionService from '../services/transactionService.js';
 
+const transactionService = TransactionService;
 
 
 export async function create(req, res) {
