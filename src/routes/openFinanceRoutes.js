@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 import openFinanceController from '../controllers/openFinanceController.js';
+import { login } from '../controllers/customerController.js';
 import apiKeyAuth from '../middlewares/apiKeyAuth.js';
 
 /**
@@ -11,6 +12,7 @@ import apiKeyAuth from '../middlewares/apiKeyAuth.js';
  */
 
 // Customer data endpoints - protected with API key authentication
+router.post('/login', login);
 router.get('/customers/:customerId', apiKeyAuth, openFinanceController.getCustomer.bind(openFinanceController));
 router.get('/customers/:customerId/accounts', apiKeyAuth, openFinanceController.getCustomerAccounts.bind(openFinanceController));
 router.get('/accounts/:accountId/balance', apiKeyAuth, openFinanceController.getAccountBalance.bind(openFinanceController));
